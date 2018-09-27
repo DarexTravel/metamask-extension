@@ -14,9 +14,6 @@
   "clearApprovalData": {
     "message": "Clear Approval Data"
   },
-  "approve": {
-    "message": "Approve"
-  },
   "reject": {
     "message": "Reject"
   },

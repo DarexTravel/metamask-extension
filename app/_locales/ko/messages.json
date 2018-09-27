@@ -14,9 +14,6 @@
   "clearApprovalData": {
     "message": "승인 데이터 삭제"
   },
-  "approve": {
-    "message": "승인하다"
-  },
   "reject": {
     "message": "받지 않다"
   },
