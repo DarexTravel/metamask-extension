@@ -27,16 +27,6 @@ var metamaskStream = new LocalMessageDuplexStream({
 // compose the inpage provider
 var inpageProvider = new MetamaskInpageProvider(metamaskStream)
 
-// Add temporary middleware to handle user-forced injection post-1102. Specifically,
-// this middleware checks for a READ_ETHEREUM_ACCOUNTS URL parameter and sets a flag
-// on the RPC request object. This is only meant to ease the transition to 1102 and
-// will be removed in the future.
-inpageProvider.rpcEngine._middleware.unshift((req, res, next) => {
-  const query = window.location.search.substring(1)
-  req.forceInjection = !!query.split('&').find(pair => pair.split('=')[0] === 'READ_ETHEREUM_ACCOUNTS')
-  next()
-})
-
 // Augment the provider with its enable method
 inpageProvider.enable = function () {
   return new Promise((resolve, reject) => {

@@ -135,22 +135,26 @@ function listenForProviderRequest () {
         injectScript(`window.dispatchEvent(new CustomEvent('ethereumprovider', { detail: { error: 'User rejected provider access' }}))`)
         break
       case 'force-injection':
-        injectScript(`window.location.search += ((window.location.search.length > 0 ? '&' : '') + 'READ_ETHEREUM_ACCOUNTS')`)
+        chrome.storage.local.get(['forcedOrigins'], ({ forcedOrigins = [] }) => {
+          chrome.storage.local.set({ forcedOrigins: [ ...forcedOrigins, window.location.hostname ] }, () => {
+            injectScript(`window.location.reload()`)
+          })
+        })
         break
     }
   })
 }
 
 /**
- * Checks the current URL to see if a READ_ETHEREUM_ACCOUNTS paremter is present. If it is,
- * this URL will be marked as approved, meaning the publicConfig stream will be enabled.
- * This is only meant to ease the transition to 1102 and will be removed in the future.
+ * Checks the current origin to see if it exists in the extension's locally-stored list
+ * off user-whitelisted dapp origins. If it is, this origin will be marked as approved,
+ * meaning the publicConfig stream will be enabled. This is only meant to ease the transition
+ * to 1102 and will be removed in the future.
  */
 function checkForcedInjection () {
-  const query = window.location.search.substring(1)
-  const flag = !!query.split('&').find(pair => pair.split('=')[0] === 'READ_ETHEREUM_ACCOUNTS')
-  if (!flag) { return }
-  originApproved = true
+  chrome.storage.local.get(['forcedOrigins'], ({ forcedOrigins = [] }) => {
+    originApproved = forcedOrigins.indexOf(window.location.hostname) > -1
+  })
 }
 
 /**

@@ -68,6 +68,7 @@ class ProviderApprovalController {
    */
   clearApprovedOrigins () {
     this.approvedOrigins = {}
+    chrome.storage.local.set({ forcedOrigins: [] })
   }
 
   /**
@@ -77,7 +78,11 @@ class ProviderApprovalController {
    * @returns {boolean} - True if the origin has been approved
    */
   isApproved (origin) {
-    return this.approvedOrigins[origin]
+    return new Promise(resolve => {
+      chrome.storage.local.get(['forcedOrigins'], ({ forcedOrigins = [] }) => {
+        resolve(forcedOrigins.indexOf(origin) > -1)
+      })
+    })
   }
 
   /**
