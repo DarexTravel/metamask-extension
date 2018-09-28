@@ -263,10 +263,10 @@ module.exports = class MetamaskController extends EventEmitter {
       },
       version,
       // account mgmt
-      getAccounts: async ({ origin }) => {
+      getAccounts: async ({ origin, forceInjection }) => {
         // Expose no accounts if this origin has not been approved, preventing
         // account-requring RPC methods from completing successfully
-        if (origin !== 'MetaMask' && !this.providerApprovalController.isApproved(origin)) { return [] }
+        if (!forceInjection && origin !== 'MetaMask' && !this.providerApprovalController.isApproved(origin)) { return [] }
         const isUnlocked = this.keyringController.memStore.getState().isUnlocked
         const selectedAddress = this.preferencesController.getSelectedAddress()
         // only show address if account is unlocked
@@ -438,6 +438,7 @@ module.exports = class MetamaskController extends EventEmitter {
       approveProviderRequest: providerApprovalController.approveProviderRequest.bind(providerApprovalController),
       clearApprovedOrigins: providerApprovalController.clearApprovedOrigins.bind(providerApprovalController),
       rejectProviderRequest: providerApprovalController.rejectProviderRequest.bind(providerApprovalController),
+      forceInjection: providerApprovalController.forceInjection.bind(providerApprovalController),
     }
   }
 

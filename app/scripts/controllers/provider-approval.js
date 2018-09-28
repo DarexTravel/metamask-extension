@@ -79,6 +79,13 @@ class ProviderApprovalController {
   isApproved (origin) {
     return this.approvedOrigins[origin]
   }
+
+  /**
+   * Called when a user forces the exposure of a full Ethereum provider API
+   */
+  forceInjection () {
+    this.platform.sendMessage({ action: 'force-injection' }, { active: true })
+  }
 }
 
 module.exports = ProviderApprovalController

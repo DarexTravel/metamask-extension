@@ -23,6 +23,7 @@ if (shouldInjectWeb3()) {
   injectScript(inpageBundle)
   setupStreams()
   listenForProviderRequest()
+  checkForcedInjection()
 }
 
 /**
@@ -133,10 +134,24 @@ function listenForProviderRequest () {
       case 'reject-provider-request':
         injectScript(`window.dispatchEvent(new CustomEvent('ethereumprovider', { detail: { error: 'User rejected provider access' }}))`)
         break
+      case 'force-injection':
+        injectScript(`window.location.search += ((window.location.search.length > 0 ? '&' : '') + 'READ_ETHEREUM_ACCOUNTS')`)
+        break
     }
   })
 }
 
+/**
+ * Checks the current URL to see if a READ_ETHEREUM_ACCOUNTS paremter is present. If it is,
+ * this URL will be marked as approved, meaning the publicConfig stream will be enabled.
+ * This is only meant to ease the transition to 1102 and will be removed in the future.
+ */
+function checkForcedInjection () {
+  const query = window.location.search.substring(1)
+  const flag = !!query.split('&').find(pair => pair.split('=')[0] === 'READ_ETHEREUM_ACCOUNTS')
+  if (!flag) { return }
+  originApproved = true
+}
 
 /**
  * Error handler for page to plugin stream disconnections
